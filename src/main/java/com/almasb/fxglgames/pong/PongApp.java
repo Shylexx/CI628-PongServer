@@ -144,6 +144,10 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         server.setOnConnected(connection -> {
             connection.addMessageHandlerFX(this);
+            // ASSIGN NEW PLAYERS THEIR ID
+            var message = "ON_CONNECT," + server.getConnections().size();
+
+            connection.send(message);
         });
 
         getGameWorld().addEntityFactory(new PongFactory());
@@ -253,10 +257,74 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         var tokens = message.split(",");
 
         Arrays.stream(tokens).skip(1).forEach(key -> {
-            if (key.endsWith("_DOWN")) {
-                getInput().mockKeyPress(KeyCode.valueOf(key.substring(0, 1)));
-            } else if (key.endsWith("_UP")) {
-                getInput().mockKeyRelease(KeyCode.valueOf(key.substring(0, 1)));
+          // W_DOWN
+//            if (key.endsWith("_DOWN")) {
+//              if(key.startsWith("1")) {
+//                getInput().mockKeyPress(KeyCode.valueOf(key.substring(0, 1)));
+//              } else if (key.startsWith("2")) {
+//                getInput().mockKeyPress(KeyCode.valueOf(key.substring(0, 1)));
+//              }
+//            } else if (key.endsWith("_UP")) {
+//              getInput().mockKeyRelease(KeyCode.valueOf(key.substring(0, 1)));
+//            }
+
+            switch (key.charAt(0)) {
+              case '1': {
+                // Player1
+                if(key.endsWith("_DOWN")) {
+                  switch (key.charAt(1)) {
+                    case 'W': {
+                      player1Bat.up();
+                      break;
+                    }
+                    case 'S': {
+                      player1Bat.down();
+                      break;
+                    }
+                  }
+                } else if (key.endsWith("_UP")) {
+                  switch (key.charAt(1)) {
+                    case 'W': {
+                      player1Bat.stop();
+                      break;
+                    }
+                    case 'S': {
+                      player1Bat.stop();
+                      break;
+                    }
+                  }
+                }
+                break;
+              }
+              case '2': {
+                // Player2
+                if(key.endsWith("_DOWN")) {
+                  // On button press
+                  switch (key.charAt(1)) {
+                    case 'W': {
+                      player2Bat.up();
+                      break;
+                    }
+                    case 'S': {
+                      player2Bat.down();
+                      break;
+                    }
+                  }
+                } else if (key.endsWith("_UP")) {
+                  // On button release
+                  switch (key.charAt(1)) {
+                    case 'W': {
+                      player2Bat.stop();
+                      break;
+                    }
+                    case 'S': {
+                      player2Bat.stop();
+                      break;
+                    }
+                  }
+                }
+                break;
+              }
             }
         });
     }
