@@ -127,6 +127,10 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                 player2Bat.stop();
             }
         }, KeyCode.K);
+
+
+
+
     }
 
     @Override
@@ -217,10 +221,23 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     @Override
     protected void onUpdate(double tpf) {
         if (!server.getConnections().isEmpty()) {
-            var message = "GAME_DATA," + player1.getY() + "," + player2.getY() + "," + ball.getX() + "," + ball.getY();
+            var message = "GAME_DATA," + player1.getX() + "," + player1.getY() + "," + player2.getX() + "," + player2.getY() + "," + ball.getX() + "," + ball.getY();
 
             server.broadcast(message);
         }
+
+      UserAction action = new UserAction("Test Action") {
+        @Override
+        protected void onAction() {
+          super.onAction();
+        }
+
+        @Override
+        protected void onActionEnd() {
+          super.onActionEnd();
+        }
+      };
+
     }
 
     private void initScreenBounds() {
