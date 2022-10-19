@@ -40,6 +40,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
 import com.almasb.fxgl.physics.box2d.dynamics.FixtureDef;
 import javafx.beans.binding.Bindings;
+import javafx.geometry.Point2D;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -50,6 +51,17 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  * @author Almas Baimagambetov (AlmasB) (almaslvl@gmail.com)
  */
 public class PongFactory implements EntityFactory {
+
+    @Spawns("testterrain")
+    public Entity testterrain(SpawnData data) {
+
+      return entityBuilder(data)
+              .type(EntityType.TERRAIN)
+              .viewWithBBox(new Rectangle(800, 30, Color.BLUE))
+              .with(new PhysicsComponent())
+              .with(new CollidableComponent(true))
+              .build();
+    }
 
     @Spawns("ball")
     public Entity newBall(SpawnData data) {
@@ -92,7 +104,11 @@ public class PongFactory implements EntityFactory {
         boolean isPlayer = data.get("isPlayer");
 
         PhysicsComponent physics = new PhysicsComponent();
-        physics.setBodyType(BodyType.KINEMATIC);
+        physics.setBodyType(BodyType.DYNAMIC);
+        physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(16, 38), BoundingShape.box(6, 8)));
+
+        // this avoids player sticking to walls
+        physics.setFixtureDef(new FixtureDef().friction(0.0f));
 
         return entityBuilder(data)
                 .type(isPlayer ? EntityType.PLAYER_BAT : EntityType.ENEMY_BAT)
@@ -101,5 +117,25 @@ public class PongFactory implements EntityFactory {
                 .with(physics)
                 .with(new BatComponent())
                 .build();
+    }
+
+    @Spawns("player")
+    public Entity newPlayer(SpawnData data) {
+      boolean isPlayer = data.get("isPlayer");
+
+      PhysicsComponent physics = new PhysicsComponent();
+      physics.setBodyType(BodyType.DYNAMIC);
+      physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(10, 59), BoundingShape.box(15, 2)));
+
+      // this avoids player sticking to walls
+      physics.setFixtureDef(new FixtureDef().friction(0.0f));
+
+      return entityBuilder(data)
+              .type(EntityType.PLAYER)
+              .viewWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))
+              .with(physics)
+              .with(new CollidableComponent(true))
+              .with(new PlayerComponent())
+              .build();
     }
 }

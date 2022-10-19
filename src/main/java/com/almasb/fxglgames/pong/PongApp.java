@@ -31,6 +31,7 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
@@ -68,13 +69,15 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         settings.setVersion("1.0");
         settings.setFontUI("pong.ttf");
         settings.setApplicationMode(ApplicationMode.DEBUG);
+        settings.setDeveloperMenuEnabled(true);
     }
 
     private Entity player1;
     private Entity player2;
     private Entity ball;
-    private BatComponent player1Bat;
-    private BatComponent player2Bat;
+    private PlayerComponent player1comp;
+    private PlayerComponent player2comp;
+    private Entity terrain;
 
     private Server<String> server;
 
@@ -83,50 +86,99 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         getInput().addAction(new UserAction("Up1") {
             @Override
             protected void onAction() {
-                player1Bat.up();
+                player1comp.jump();
             }
 
             @Override
             protected void onActionEnd() {
-                player1Bat.stop();
+                player1comp.stopJump();
             }
         }, KeyCode.W);
 
-        getInput().addAction(new UserAction("Down1") {
-            @Override
-            protected void onAction() {
-                player1Bat.down();
-            }
 
-            @Override
-            protected void onActionEnd() {
-                player1Bat.stop();
-            }
-        }, KeyCode.S);
+//        getInput().addAction(new UserAction("Down1") {
+//            @Override
+//            protected void onAction() {
+//                player1comp.down();
+//            }
+//
+//            @Override
+//            protected void onActionEnd() {
+//                player1comp.stop();
+//            }
+//        }, KeyCode.S);
+
+      getInput().addAction(new UserAction("Left1") {
+        @Override
+        protected void onAction() {
+          player1comp.left();
+        }
+
+        @Override
+        protected void onActionEnd() {
+          player1comp.stop();
+        }
+      }, KeyCode.A);
+
+      getInput().addAction(new UserAction("Right1") {
+        @Override
+        protected void onAction() {
+          player1comp.right();
+        }
+
+        @Override
+        protected void onActionEnd() {
+          player1comp.stop();
+        }
+      }, KeyCode.D);
 
         getInput().addAction(new UserAction("Up2") {
             @Override
             protected void onAction() {
-                player2Bat.up();
+                player2comp.jump();
             }
 
             @Override
             protected void onActionEnd() {
-                player2Bat.stop();
+                player2comp.stopJump();
             }
         }, KeyCode.I);
 
-        getInput().addAction(new UserAction("Down2") {
-            @Override
-            protected void onAction() {
-                player2Bat.down();
-            }
+//        getInput().addAction(new UserAction("Down2") {
+//            @Override
+//            protected void onAction() {
+//                player2comp.down();
+//            }
+//
+//            @Override
+//            protected void onActionEnd() {
+//                player2comp.stop();
+//            }
+//        }, KeyCode.K);
 
-            @Override
-            protected void onActionEnd() {
-                player2Bat.stop();
-            }
-        }, KeyCode.K);
+      getInput().addAction(new UserAction("Left2") {
+        @Override
+        protected void onAction() {
+          player2comp.left();
+        }
+
+        @Override
+        protected void onActionEnd() {
+          player2comp.stop();
+        }
+      }, KeyCode.J);
+
+      getInput().addAction(new UserAction("Right2") {
+        @Override
+        protected void onAction() {
+          player2comp.right();
+        }
+
+        @Override
+        protected void onActionEnd() {
+          player2comp.stop();
+        }
+      }, KeyCode.L);
 
 
 
@@ -167,7 +219,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().setGravity(0, 0);
+        getPhysicsWorld().setGravity(0, 720);
 
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.WALL) {
             @Override
@@ -226,18 +278,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
             server.broadcast(message);
         }
 
-      UserAction action = new UserAction("Test Action") {
-        @Override
-        protected void onAction() {
-          super.onAction();
-        }
-
-        @Override
-        protected void onActionEnd() {
-          super.onActionEnd();
-        }
-      };
-
     }
 
     private void initScreenBounds() {
@@ -250,12 +290,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     }
 
     private void initGameObjects() {
+        terrain = spawn("testterrain", 0, getAppHeight() - 50);
         ball = spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
-        player1 = spawn("bat", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
-        player2 = spawn("bat", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
+        player1 = spawn("player", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
+        player2 = spawn("player", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
 
-        player1Bat = player1.getComponent(BatComponent.class);
-        player2Bat = player2.getComponent(BatComponent.class);
+        player1comp = player1.getComponent(PlayerComponent.class);
+        player2comp = player2.getComponent(PlayerComponent.class);
     }
 
     private void playHitAnimation(Entity bat) {
@@ -291,22 +332,38 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                 if(key.endsWith("_DOWN")) {
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player1Bat.up();
+                      player1comp.jump();
                       break;
                     }
-                    case 'S': {
-                      player1Bat.down();
+//                    case 'S': {
+//                      player1comp.down();
+//                      break;
+//                    }
+                    case 'A': {
+                      player1comp.left();
+                      break;
+                    }
+                    case 'D': {
+                      player1comp.right();
                       break;
                     }
                   }
                 } else if (key.endsWith("_UP")) {
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player1Bat.stop();
+                      player1comp.stopJump();
                       break;
                     }
-                    case 'S': {
-                      player1Bat.stop();
+//                    case 'S': {
+//                      player1comp.stop();
+//                      break;
+//                    }
+                    case 'A': {
+                      player1comp.stop();
+                      break;
+                    }
+                    case 'D': {
+                      player1comp.stop();
                       break;
                     }
                   }
@@ -319,11 +376,19 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                   // On button press
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player2Bat.up();
+                      player2comp.jump();
                       break;
                     }
-                    case 'S': {
-                      player2Bat.down();
+//                    case 'S': {
+//                      player2comp.down();
+//                      break;
+//                    }
+                    case 'A': {
+                      player2comp.left();
+                      break;
+                    }
+                    case 'D': {
+                      player2comp.right();
                       break;
                     }
                   }
@@ -331,11 +396,19 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                   // On button release
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player2Bat.stop();
+                      player2comp.stopJump();
                       break;
                     }
-                    case 'S': {
-                      player2Bat.stop();
+//                    case 'S': {
+//                      player2comp.stop();
+//                      break;
+//                    }
+                    case 'A': {
+                      player2comp.stop();
+                      break;
+                    }
+                    case 'D': {
+                      player2comp.stop();
                       break;
                     }
                   }
