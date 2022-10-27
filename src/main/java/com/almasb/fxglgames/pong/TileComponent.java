@@ -36,8 +36,9 @@ public class TileComponent extends Component {
 //    }, Duration.millis(300));
     switch (type) {
       case EMPTY: {
-        //view.setVisible(false);
-        ((Rectangle) view.getChildren().get(0)).setFill(Color.GREEN);
+        view.setVisible(false);
+        // DEBUG: MAKE EMPTY TILES GREEN
+        //((Rectangle) view.getChildren().get(0)).setFill(Color.GREEN);
         bbox.clearHitBoxes();
       }
     }
