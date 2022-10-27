@@ -20,7 +20,7 @@ public class TilemapComponent extends Component {
     // Spawn a map
     for(int y = 0; y < mapHeight; y++) {
       for (int x = 0; x < mapWidth; x++) {
-        tiles[y][x] = FXGL.spawn("tile", new SpawnData(x * 10, y * 10).put("type", TileType.WALL));
+        tiles[y][x] = FXGL.spawn("tile", new SpawnData(x * 20, ((y * 20) + 500)).put("type", TileType.WALL));
       }
     }
   }

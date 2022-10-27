@@ -157,7 +157,7 @@ public class PongFactory implements EntityFactory {
 
       return entityBuilder(data)
               .type(EntityType.TILE)
-              .viewWithBBox(new Rectangle(10, 10, Color.BLUE))
+              .viewWithBBox(new Rectangle(20, 20, Color.BLUE))
               .with(physics)
               .with(new TileComponent(type))
               .build();
