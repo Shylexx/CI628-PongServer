@@ -138,4 +138,28 @@ public class PongFactory implements EntityFactory {
               .with(new PlayerComponent())
               .build();
     }
+
+    @Spawns("mapManager")
+    public Entity newMapManager(SpawnData data) {
+      return entityBuilder(data)
+              .type(EntityType.MAP)
+              .with(new TilemapComponent(data.get("width"), data.get("height")))
+              .build();
+    }
+
+    @Spawns("tile")
+    public Entity newTile(SpawnData data) {
+      TileType type = data.get("type");
+
+      PhysicsComponent physics = new PhysicsComponent();
+      // Bodies start as static, can become dynamic when no surrounding tiles
+      physics.setBodyType(BodyType.STATIC);
+
+      return entityBuilder(data)
+              .type(EntityType.TILE)
+              .viewWithBBox(new Rectangle(10, 10, Color.BLUE))
+              .with(physics)
+              .with(new TileComponent(type))
+              .build();
+    }
 }

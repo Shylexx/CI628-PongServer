@@ -78,6 +78,8 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     private PlayerComponent player1comp;
     private PlayerComponent player2comp;
     private Entity terrain;
+    private Entity mapManager;
+    private TilemapComponent mapComponent;
 
     private Server<String> server;
 
@@ -179,6 +181,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
           player2comp.stop();
         }
       }, KeyCode.L);
+
+      getInput().addAction(new UserAction("ColorChange") {
+        // WHEN I PRESS B, CHANGE TILE (7, 3) TO RED TEST
+        @Override
+        protected void onAction() { mapComponent.tiles[3][7].getComponent(TileComponent.class).ChangeWallToRed();}
+
+      }, KeyCode.B);
 
 
 
@@ -297,6 +306,11 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         player1comp = player1.getComponent(PlayerComponent.class);
         player2comp = player2.getComponent(PlayerComponent.class);
+
+        mapManager = spawn("mapManager", new SpawnData(0, 0).put("width", 20).put("height", 20));
+        mapComponent = mapManager.getComponent(TilemapComponent.class);
+        mapComponent.spawnMap();
+
     }
 
     private void playHitAnimation(Entity bat) {
