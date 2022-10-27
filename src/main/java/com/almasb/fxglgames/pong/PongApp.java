@@ -316,7 +316,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         player1comp = player1.getComponent(PlayerComponent.class);
         player2comp = player2.getComponent(PlayerComponent.class);
 
-        mapManager = spawn("mapManager", new SpawnData(0, 0).put("width", 40).put("height", 25));
+        mapManager = spawn("mapManager", new SpawnData(0, 0).put("width", 40).put("height", 50));
         mapComponent = mapManager.getComponent(TilemapComponent.class);
         mapComponent.spawnMap();
 

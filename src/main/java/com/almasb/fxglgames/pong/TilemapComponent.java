@@ -12,7 +12,7 @@ public class TilemapComponent extends Component {
   public int mapWidth;
 
   public static final double MAP_X_OFFSET = 0;
-  public static final double MAP_Y_OFFSET = 500;
+  public static final double MAP_Y_OFFSET = 0;
   public static final double TILE_SIZE = 20;
 
   public TilemapComponent(int width, int height) {
@@ -25,7 +25,11 @@ public class TilemapComponent extends Component {
     // Spawn a map
     for(int y = 0; y < mapHeight; y++) {
       for (int x = 0; x < mapWidth; x++) {
-        tiles[y][x] = FXGL.spawn("tile", new SpawnData(x * 20, ((y * 20) + MAP_Y_OFFSET)).put("type", TileType.WALL));
+        if(y < (mapHeight / 3)) {
+          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 20) + MAP_X_OFFSET), ((y * 20) + MAP_Y_OFFSET)).put("type", TileType.EMPTY));
+        } else {
+          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 20) + MAP_X_OFFSET), ((y * 20) + MAP_Y_OFFSET)).put("type", TileType.WALL));
+        }
       }
     }
   }

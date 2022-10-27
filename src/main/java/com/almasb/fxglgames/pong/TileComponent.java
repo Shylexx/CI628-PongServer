@@ -34,11 +34,13 @@ public class TileComponent extends Component {
 //    FXGLForKtKt.getGameTimer().runAtInterval(() -> {
 //      ((Rectangle)view.getChildren().get(0)).setFill(Color.color(Math.random(), Math.random(), Math.random()));
 //    }, Duration.millis(300));
-  }
-
-  @Override
-  public void onUpdate(double tpf) {
-
+    switch (type) {
+      case EMPTY: {
+        //view.setVisible(false);
+        ((Rectangle) view.getChildren().get(0)).setFill(Color.GREEN);
+        bbox.clearHitBoxes();
+      }
+    }
   }
 
   public void MakeWall() {

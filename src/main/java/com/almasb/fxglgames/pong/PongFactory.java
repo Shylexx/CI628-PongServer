@@ -150,18 +150,20 @@ public class PongFactory implements EntityFactory {
 
     @Spawns("tile")
     public Entity newTile(SpawnData data) {
-      TileType type = data.get("type");
+        TileType type = data.get("type");
 
-      PhysicsComponent physics = new PhysicsComponent();
-      // Bodies start as static, can become dynamic when no surrounding tiles
-      physics.setBodyType(BodyType.STATIC);
+        PhysicsComponent physics = new PhysicsComponent();
+        // Bodies start as static, can become dynamic when no surrounding tiles
+        physics.setBodyType(BodyType.STATIC);
 
-      return entityBuilder(data)
-              .type(EntityType.TILE)
-              .view(new Rectangle(20, 20, Color.BLUE))
-              .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(20, 20)))
-              .with(physics)
-              .with(new TileComponent(type))
-              .build();
+
+        return entityBuilder(data)
+                .type(EntityType.TILE)
+                .view(new Rectangle(20, 20, Color.BLUE))
+                .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(20, 20)))
+                .with(physics)
+                .with(new TileComponent(type))
+                .build();
+
     }
 }
