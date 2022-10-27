@@ -39,6 +39,7 @@ import com.almasb.fxgl.net.*;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.ui.UI;
+import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
@@ -87,7 +88,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     protected void initInput() {
         getInput().addAction(new UserAction("Up1") {
             @Override
-            protected void onAction() {
+            protected void onActionBegin() {
                 player1comp.jump();
             }
 
@@ -134,16 +135,24 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         }
       }, KeyCode.D);
 
+      getInput().addAction(new UserAction("BreakBelowBlock") {
+          @Override
+          protected void onActionBegin() {
+              FXGL.debug(mapComponent.MapLocAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)));
+              mapComponent.TileAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)).BreakTile();
+          }
+      }, KeyCode.X);
+
         getInput().addAction(new UserAction("Up2") {
             @Override
             protected void onAction() {
                 player2comp.jump();
             }
 
-            @Override
-            protected void onActionEnd() {
-                player2comp.stopJump();
-            }
+//            @Override
+//            protected void onActionEnd() {
+//                player2comp.stopJump();
+//            }
         }, KeyCode.I);
 
 //        getInput().addAction(new UserAction("Down2") {

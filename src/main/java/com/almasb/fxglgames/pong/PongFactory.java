@@ -125,14 +125,15 @@ public class PongFactory implements EntityFactory {
 
       PhysicsComponent physics = new PhysicsComponent();
       physics.setBodyType(BodyType.DYNAMIC);
-      physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(10, 59), BoundingShape.box(15, 2)));
+      physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(2, 58), BoundingShape.box(16, 2)));
 
       // this avoids player sticking to walls
-      physics.setFixtureDef(new FixtureDef().friction(0.0f));
+      //physics.setFixtureDef(new FixtureDef().friction(0.0f));
 
       return entityBuilder(data)
               .type(EntityType.PLAYER)
-              .viewWithBBox(new Rectangle(20, 60, Color.LIGHTGRAY))
+              .view(new Rectangle(20, 60, Color.LIGHTGRAY))
+              .bbox(new HitBox("bodybox", new Point2D(0, 40), BoundingShape.circle(10)))
               .with(physics)
               .with(new CollidableComponent(true))
               .with(new PlayerComponent())
@@ -157,7 +158,8 @@ public class PongFactory implements EntityFactory {
 
       return entityBuilder(data)
               .type(EntityType.TILE)
-              .viewWithBBox(new Rectangle(20, 20, Color.BLUE))
+              .view(new Rectangle(20, 20, Color.BLUE))
+              .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(20, 20)))
               .with(physics)
               .with(new TileComponent(type))
               .build();

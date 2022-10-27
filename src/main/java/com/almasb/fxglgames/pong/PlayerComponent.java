@@ -6,7 +6,7 @@ import com.almasb.fxgl.physics.PhysicsComponent;
 
 public class PlayerComponent extends Component {
 
-  private static final double MOVE_SPEED = 420;
+  private static final double MOVE_SPEED = 200;
 
   protected PhysicsComponent physics;
 
@@ -29,30 +29,17 @@ public class PlayerComponent extends Component {
     }
   }
 
-  public void down() {
-    if (entity.getBottomY() <= FXGL.getAppHeight() - (MOVE_SPEED / 60))
-      physics.setVelocityY(MOVE_SPEED);
-    else
-      stop();
-  }
-
   public void left() {
-    if (entity.getX() >= MOVE_SPEED / 60)
       physics.setVelocityX(-MOVE_SPEED);
-    else
-      stop();
   }
 
   public void right() {
-    if (entity.getRightX() <= FXGL.getAppWidth() - (MOVE_SPEED / 60))
       physics.setVelocityX(MOVE_SPEED);
-    else {
-      stop();
-    }
+
   }
 
   public void stop() {
-    physics.setLinearVelocity(0, 0);
+    physics.setVelocityX(0);
   }
 
 }
