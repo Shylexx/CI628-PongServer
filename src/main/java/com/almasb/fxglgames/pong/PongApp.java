@@ -34,10 +34,12 @@ import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
+import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.net.*;
 import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
+import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.ui.UI;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -138,10 +140,22 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
       getInput().addAction(new UserAction("BreakBelowBlock") {
           @Override
           protected void onActionBegin() {
-              FXGL.debug(mapComponent.MapLocAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)));
+              //FXGL.debug(mapComponent.MapLocAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)));
               mapComponent.TileAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)).BreakTile();
+              //FXGL.debug(mapComponent.TileAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)).getEntity().toString());
+
           }
       }, KeyCode.X);
+
+      getInput().addAction(new UserAction("MakeBelowBlock") {
+        @Override
+        protected void onActionBegin() {
+          //FXGL.debug(mapComponent.MapLocAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)));
+          mapComponent.TileAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)).MakeWall();
+          //FXGL.debug(mapComponent.TileAtPoint(new Point2D(player1.getX() + 5, player1.getY() + 70)).getEntity().toString());
+
+        }
+      }, KeyCode.Z);
 
         getInput().addAction(new UserAction("Up2") {
             @Override
@@ -227,7 +241,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         getGameWorld().addEntityFactory(new PongFactory());
         getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
 
-        initScreenBounds();
+        //initScreenBounds();
         initGameObjects();
 
         var t = new Thread(server.startTask()::run);
@@ -296,6 +310,8 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
             server.broadcast(message);
         }
 
+
+
     }
 
     private void initScreenBounds() {
@@ -308,8 +324,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     }
 
     private void initGameObjects() {
-        terrain = spawn("testterrain", 0, getAppHeight() - 50);
-        ball = spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
+        //ball = spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
         player1 = spawn("player", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
         player2 = spawn("player", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
 

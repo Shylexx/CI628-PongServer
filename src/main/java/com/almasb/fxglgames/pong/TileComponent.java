@@ -1,8 +1,10 @@
 package com.almasb.fxglgames.pong;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.dsl.FXGLForKtKt;
 import com.almasb.fxgl.entity.component.Component;
 import com.almasb.fxgl.entity.components.BoundingBoxComponent;
+import com.almasb.fxgl.entity.components.CollidableComponent;
 import com.almasb.fxgl.entity.components.ViewComponent;
 import com.almasb.fxgl.physics.BoundingShape;
 import com.almasb.fxgl.physics.HitBox;
@@ -39,7 +41,12 @@ public class TileComponent extends Component {
         view.setVisible(false);
         // DEBUG: MAKE EMPTY TILES GREEN
         //((Rectangle) view.getChildren().get(0)).setFill(Color.GREEN);
-        bbox.clearHitBoxes();
+
+        physics.setOnPhysicsInitialized(() -> physics.getBody().setActive(false));
+        break;
+      }
+      case WALL: {
+        System.out.println(bbox.hitBoxesProperty());
       }
     }
   }
@@ -49,8 +56,8 @@ public class TileComponent extends Component {
 
     type = TileType.WALL;
     view.setVisible(true);
+    physics.getBody().setActive(true);
     ((Rectangle) view.getChildren().get(0)).setFill(Color.BLUE);
-    bbox.addHitBox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(20, 20)));
   }
 
   public void ChangeWallToRed() {
@@ -58,11 +65,15 @@ public class TileComponent extends Component {
   }
 
   public void BreakTile() {
+    System.out.println(bbox.hitBoxesProperty());
     if (type == TileType.EMPTY) return;
 
     type = TileType.EMPTY;
     view.setVisible(false);
     bbox.clearHitBoxes();
+    System.out.println("Cleared Hitboxes");
+    System.out.println(bbox.hitBoxesProperty());
+    physics.getBody().setActive(false);
   }
 
 }

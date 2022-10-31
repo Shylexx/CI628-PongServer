@@ -52,17 +52,6 @@ import static com.almasb.fxgl.dsl.FXGL.*;
  */
 public class PongFactory implements EntityFactory {
 
-    @Spawns("testterrain")
-    public Entity testterrain(SpawnData data) {
-
-      return entityBuilder(data)
-              .type(EntityType.TERRAIN)
-              .viewWithBBox(new Rectangle(800, 30, Color.BLUE))
-              .with(new PhysicsComponent())
-              .with(new CollidableComponent(true))
-              .build();
-    }
-
     @Spawns("ball")
     public Entity newBall(SpawnData data) {
         PhysicsComponent physics = new PhysicsComponent();
@@ -155,7 +144,6 @@ public class PongFactory implements EntityFactory {
         PhysicsComponent physics = new PhysicsComponent();
         // Bodies start as static, can become dynamic when no surrounding tiles
         physics.setBodyType(BodyType.STATIC);
-
 
         return entityBuilder(data)
                 .type(EntityType.TILE)
