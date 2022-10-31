@@ -77,7 +77,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
     private Entity player1;
     private Entity player2;
-    private Entity ball;
     private PlayerComponent player1comp;
     private PlayerComponent player2comp;
     private Entity terrain;
@@ -253,42 +252,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0, 720);
 
-        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BALL, EntityType.WALL) {
-            @Override
-            protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
-                if (boxB.getName().equals("LEFT")) {
-                    inc("player2score", +1);
-
-                    server.broadcast("SCORES," + geti("player1score") + "," + geti("player2score"));
-
-                    server.broadcast(HIT_WALL_LEFT);
-                } else if (boxB.getName().equals("RIGHT")) {
-                    inc("player1score", +1);
-
-                    server.broadcast("SCORES," + geti("player1score") + "," + geti("player2score"));
-
-                    server.broadcast(HIT_WALL_RIGHT);
-                } else if (boxB.getName().equals("TOP")) {
-                    server.broadcast(HIT_WALL_UP);
-                } else if (boxB.getName().equals("BOT")) {
-                    server.broadcast(HIT_WALL_DOWN);
-                }
-
-                getGameScene().getViewport().shakeTranslational(5);
-            }
-        });
-
-        CollisionHandler ballBatHandler = new CollisionHandler(EntityType.BALL, EntityType.PLAYER_BAT) {
-            @Override
-            protected void onCollisionBegin(Entity a, Entity bat) {
-                playHitAnimation(bat);
-
-                server.broadcast(bat == player1 ? BALL_HIT_BAT1 : BALL_HIT_BAT2);
-            }
-        };
-
-        getPhysicsWorld().addCollisionHandler(ballBatHandler);
-        getPhysicsWorld().addCollisionHandler(ballBatHandler.copyFor(EntityType.BALL, EntityType.ENEMY_BAT));
     }
 
     @Override
@@ -305,7 +268,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     @Override
     protected void onUpdate(double tpf) {
         if (!server.getConnections().isEmpty()) {
-            var message = "GAME_DATA," + player1.getX() + "," + player1.getY() + "," + player2.getX() + "," + player2.getY() + "," + ball.getX() + "," + ball.getY();
+            var message = "GAME_DATA," + player1.getX() + "," + player1.getY() + "," + player2.getX() + "," + player2.getY();
 
             server.broadcast(message);
         }
@@ -324,7 +287,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     }
 
     private void initGameObjects() {
-        //ball = spawn("ball", getAppWidth() / 2 - 5, getAppHeight() / 2 - 5);
         player1 = spawn("player", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
         player2 = spawn("player", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
 

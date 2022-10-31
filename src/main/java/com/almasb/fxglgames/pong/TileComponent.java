@@ -46,7 +46,6 @@ public class TileComponent extends Component {
         break;
       }
       case WALL: {
-        System.out.println(bbox.hitBoxesProperty());
       }
     }
   }
@@ -65,14 +64,11 @@ public class TileComponent extends Component {
   }
 
   public void BreakTile() {
-    System.out.println(bbox.hitBoxesProperty());
     if (type == TileType.EMPTY) return;
 
     type = TileType.EMPTY;
     view.setVisible(false);
-    bbox.clearHitBoxes();
-    System.out.println("Cleared Hitboxes");
-    System.out.println(bbox.hitBoxesProperty());
+    //bbox.clearHitBoxes();
     physics.getBody().setActive(false);
   }
 
