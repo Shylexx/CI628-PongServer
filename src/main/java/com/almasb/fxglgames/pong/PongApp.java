@@ -31,32 +31,30 @@ import com.almasb.fxgl.app.ApplicationMode;
 import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
-import com.almasb.fxgl.dsl.FXGL;
+import com.almasb.fxgl.core.serialization.Bundle;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
-import com.almasb.fxgl.entity.components.BoundingBoxComponent;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.net.*;
-import com.almasb.fxgl.physics.CollisionHandler;
-import com.almasb.fxgl.physics.HitBox;
-import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.ui.UI;
+import com.almasb.fxglgames.pong.net.UDPServer;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import static com.almasb.fxgl.dsl.FXGL.*;
-import static com.almasb.fxglgames.pong.NetworkMessages.*;
 
 /**
  * A simple clone of Pong.
@@ -84,6 +82,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     private TilemapComponent mapComponent;
 
     private Server<String> server;
+    private UDPServer udpServer;
 
     @Override
     protected void initInput() {
@@ -224,10 +223,14 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
     @Override
     protected void initGame() {
+
         Writers.INSTANCE.addTCPWriter(String.class, outputStream -> new MessageWriterS(outputStream));
         Readers.INSTANCE.addTCPReader(String.class, in -> new MessageReaderS(in));
 
         server = getNetService().newTCPServer(55555, new ServerConfig<>(String.class));
+
+        udpServer = new UDPServer();
+        udpServer.start();
 
         server.setOnConnected(connection -> {
             connection.addMessageHandlerFX(this);
@@ -236,6 +239,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
             connection.send(message);
         });
+
 
         getGameWorld().addEntityFactory(new PongFactory());
         getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
