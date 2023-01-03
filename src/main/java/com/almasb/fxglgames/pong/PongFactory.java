@@ -126,6 +126,7 @@ public class PongFactory implements EntityFactory {
               .with(physics)
               .with(new CollidableComponent(true))
               .with(new PlayerComponent())
+              .onClick(entity -> {System.out.println("I print when clicked");})
               .build();
     }
 

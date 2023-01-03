@@ -2,6 +2,8 @@ package com.almasb.fxglgames.pong;
 
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.component.Component;
+import com.almasb.fxgl.entity.components.ViewComponent;
+import com.almasb.fxgl.logging.Logger;
 import com.almasb.fxgl.physics.PhysicsComponent;
 
 public class PlayerComponent extends Component {
@@ -10,23 +12,23 @@ public class PlayerComponent extends Component {
 
   protected PhysicsComponent physics;
 
+  @Override
+  public void onAdded() {
+    super.onAdded();
+  }
+
   public void up() {
     if (entity.getY() >= MOVE_SPEED / 60)
       physics.setVelocityY(-MOVE_SPEED);
     else
-      stop();
+      stopY();
   }
 
-  public void jump() {
-    if (physics.isOnGround()) {
-      physics.setVelocityY(-420);
-    }
-  }
-
-  public void stopJump() {
-    if (!physics.isOnGround()) {
-      physics.setVelocityY(0);
-    }
+  public void down() {
+    if (entity.getY() >= MOVE_SPEED / 60)
+      physics.setVelocityY(MOVE_SPEED);
+    else
+      stopY();
   }
 
   public void left() {
@@ -38,8 +40,9 @@ public class PlayerComponent extends Component {
 
   }
 
-  public void stop() {
+  public void stopX() {
     physics.setVelocityX(0);
   }
+  public void stopY() { physics.setVelocityY(0);}
 
 }

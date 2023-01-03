@@ -37,7 +37,6 @@ import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.net.*;
 import com.almasb.fxgl.ui.UI;
-import com.almasb.fxglgames.pong.net.UDPServer;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
@@ -82,34 +81,33 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     private TilemapComponent mapComponent;
 
     private Server<String> server;
-    private UDPServer udpServer;
 
     @Override
     protected void initInput() {
         getInput().addAction(new UserAction("Up1") {
             @Override
             protected void onActionBegin() {
-                player1comp.jump();
+                player1comp.up();
             }
 
             @Override
             protected void onActionEnd() {
-                player1comp.stopJump();
+                player1comp.stopY();
             }
         }, KeyCode.W);
 
 
-//        getInput().addAction(new UserAction("Down1") {
-//            @Override
-//            protected void onAction() {
-//                player1comp.down();
-//            }
-//
-//            @Override
-//            protected void onActionEnd() {
-//                player1comp.stop();
-//            }
-//        }, KeyCode.S);
+        getInput().addAction(new UserAction("Down1") {
+            @Override
+            protected void onAction() {
+                player1comp.down();
+            }
+
+            @Override
+            protected void onActionEnd() {
+                player1comp.stopY();
+            }
+        }, KeyCode.S);
 
       getInput().addAction(new UserAction("Left1") {
         @Override
@@ -119,7 +117,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         @Override
         protected void onActionEnd() {
-          player1comp.stop();
+          player1comp.stopX();
         }
       }, KeyCode.A);
 
@@ -131,7 +129,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         @Override
         protected void onActionEnd() {
-          player1comp.stop();
+          player1comp.stopX();
         }
       }, KeyCode.D);
 
@@ -158,26 +156,26 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         getInput().addAction(new UserAction("Up2") {
             @Override
             protected void onAction() {
-                player2comp.jump();
+                player2comp.up();
             }
 
-//            @Override
-//            protected void onActionEnd() {
-//                player2comp.stopJump();
-//            }
+            @Override
+            protected void onActionEnd() {
+                player2comp.stopY();
+            }
         }, KeyCode.I);
 
-//        getInput().addAction(new UserAction("Down2") {
-//            @Override
-//            protected void onAction() {
-//                player2comp.down();
-//            }
-//
-//            @Override
-//            protected void onActionEnd() {
-//                player2comp.stop();
-//            }
-//        }, KeyCode.K);
+        getInput().addAction(new UserAction("Down2") {
+            @Override
+            protected void onAction() {
+                player2comp.down();
+            }
+
+            @Override
+            protected void onActionEnd() {
+                player2comp.stopY();
+            }
+        }, KeyCode.K);
 
       getInput().addAction(new UserAction("Left2") {
         @Override
@@ -187,7 +185,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         @Override
         protected void onActionEnd() {
-          player2comp.stop();
+          player2comp.stopX();
         }
       }, KeyCode.J);
 
@@ -199,7 +197,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         @Override
         protected void onActionEnd() {
-          player2comp.stop();
+          player2comp.stopX();
         }
       }, KeyCode.L);
 
@@ -229,9 +227,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
         server = getNetService().newTCPServer(55555, new ServerConfig<>(String.class));
 
-        udpServer = new UDPServer();
-        udpServer.start();
-
         server.setOnConnected(connection -> {
             connection.addMessageHandlerFX(this);
             // ASSIGN NEW PLAYERS THEIR ID
@@ -254,7 +249,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
     @Override
     protected void initPhysics() {
-        getPhysicsWorld().setGravity(0, 720);
+        getPhysicsWorld().setGravity(0, 0);
 
     }
 
@@ -336,13 +331,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                 if(key.endsWith("_DOWN")) {
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player1comp.jump();
+                      player1comp.up();
                       break;
                     }
-//                    case 'S': {
-//                      player1comp.down();
-//                      break;
-//                    }
+                    case 'S': {
+                      player1comp.down();
+                      break;
+                    }
                     case 'A': {
                       player1comp.left();
                       break;
@@ -355,19 +350,19 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                 } else if (key.endsWith("_UP")) {
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player1comp.stopJump();
+                      player1comp.stopY();
                       break;
                     }
-//                    case 'S': {
-//                      player1comp.stop();
-//                      break;
-//                    }
+                    case 'S': {
+                      player1comp.stopY();
+                      break;
+                    }
                     case 'A': {
-                      player1comp.stop();
+                      player1comp.stopX();
                       break;
                     }
                     case 'D': {
-                      player1comp.stop();
+                      player1comp.stopX();
                       break;
                     }
                   }
@@ -380,13 +375,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                   // On button press
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player2comp.jump();
+                      player2comp.up();
                       break;
                     }
-//                    case 'S': {
-//                      player2comp.down();
-//                      break;
-//                    }
+                    case 'S': {
+                      player2comp.down();
+                      break;
+                    }
                     case 'A': {
                       player2comp.left();
                       break;
@@ -400,19 +395,19 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                   // On button release
                   switch (key.charAt(1)) {
                     case 'W': {
-                      player2comp.stopJump();
+                      player2comp.stopY();
                       break;
                     }
-//                    case 'S': {
-//                      player2comp.stop();
-//                      break;
-//                    }
+                    case 'S': {
+                      player2comp.stopY();
+                      break;
+                    }
                     case 'A': {
-                      player2comp.stop();
+                      player2comp.stopX();
                       break;
                     }
                     case 'D': {
-                      player2comp.stop();
+                      player2comp.stopX();
                       break;
                     }
                   }
