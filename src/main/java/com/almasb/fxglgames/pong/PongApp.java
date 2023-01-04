@@ -286,13 +286,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     }
 
     private void initGameObjects() {
-        player1 = spawn("player", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true));
-        player2 = spawn("player", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false));
+        player1 = spawn("player", new SpawnData(getAppWidth() / 4, getAppHeight() / 2 - 30).put("isPlayer", true).put("playerID", 1));
+        player2 = spawn("player", new SpawnData(3 * getAppWidth() / 4 - 20, getAppHeight() / 2 - 30).put("isPlayer", false).put("playerID", 2));
 
         player1comp = player1.getComponent(PlayerComponent.class);
         player2comp = player2.getComponent(PlayerComponent.class);
 
-        mapManager = spawn("mapManager", new SpawnData(0, 0).put("width", 40).put("height", 50));
+        mapManager = spawn("mapManager", new SpawnData(0, 0));
         mapComponent = mapManager.getComponent(TilemapComponent.class);
         mapComponent.spawnMap();
 

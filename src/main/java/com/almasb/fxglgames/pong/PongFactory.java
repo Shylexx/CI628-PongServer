@@ -114,19 +114,26 @@ public class PongFactory implements EntityFactory {
 
       PhysicsComponent physics = new PhysicsComponent();
       physics.setBodyType(BodyType.DYNAMIC);
-      physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(2, 58), BoundingShape.box(16, 2)));
+      //physics.addGroundSensor(new HitBox("GROUND_SENSOR", new Point2D(2, 58), BoundingShape.box(16, 2)));
 
       // this avoids player sticking to walls
-      //physics.setFixtureDef(new FixtureDef().friction(0.0f));
+      physics.setFixtureDef(new FixtureDef().friction(0.0f));
+
+      int playerID = data.get("playerID");
+      Color playerColor;
+      if (playerID == 1) {
+          playerColor = Color.GREEN;
+      } else {
+          playerColor = Color.RED;
+      }
 
       return entityBuilder(data)
               .type(EntityType.PLAYER)
-              .view(new Rectangle(20, 60, Color.LIGHTGRAY))
-              .bbox(new HitBox("bodybox", new Point2D(0, 40), BoundingShape.circle(10)))
+              .view(new Rectangle(20, 20, playerColor))
+              .bbox(new HitBox("bodybox", new Point2D(0, 0), BoundingShape.circle(10)))
               .with(physics)
               .with(new CollidableComponent(true))
               .with(new PlayerComponent())
-              .onClick(entity -> {System.out.println("I print when clicked");})
               .build();
     }
 
@@ -134,7 +141,7 @@ public class PongFactory implements EntityFactory {
     public Entity newMapManager(SpawnData data) {
       return entityBuilder(data)
               .type(EntityType.MAP)
-              .with(new TilemapComponent(data.get("width"), data.get("height")))
+              .with(new TilemapComponent())
               .build();
     }
 
