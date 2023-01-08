@@ -26,15 +26,18 @@
 
 package com.almasb.fxglgames.pong;
 
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.EntityFactory;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.entity.Spawns;
 import com.almasb.fxgl.entity.components.CollidableComponent;
+import com.almasb.fxgl.entity.level.tiled.Tile;
 import com.almasb.fxgl.particle.ParticleComponent;
 import com.almasb.fxgl.particle.ParticleEmitter;
 import com.almasb.fxgl.particle.ParticleEmitters;
 import com.almasb.fxgl.physics.BoundingShape;
+import com.almasb.fxgl.physics.CollisionHandler;
 import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.physics.PhysicsComponent;
 import com.almasb.fxgl.physics.box2d.dynamics.BodyType;
@@ -111,6 +114,7 @@ public class PongFactory implements EntityFactory {
     @Spawns("player")
     public Entity newPlayer(SpawnData data) {
       boolean isPlayer = data.get("isPlayer");
+      int id = data.get("playerID");
 
       PhysicsComponent physics = new PhysicsComponent();
       physics.setBodyType(BodyType.DYNAMIC);
@@ -133,8 +137,45 @@ public class PongFactory implements EntityFactory {
               .bbox(new HitBox("bodybox", new Point2D(0, 0), BoundingShape.circle(10)))
               .with(physics)
               .with(new CollidableComponent(true))
-              .with(new PlayerComponent())
+              .with(new PlayerComponent(id))
               .build();
+    }
+
+    @Spawns("bullet")
+    public Entity newBullet(SpawnData data) {
+        int owner = data.get("ownerID");
+
+        PhysicsComponent physics = new PhysicsComponent();
+        physics.setBodyType(BodyType.KINEMATIC);
+        physics.setFixtureDef(new FixtureDef().density(0.3f).restitution(1.0f));
+
+        BulletDir dir = data.get("dir");
+        System.out.println(dir.toString());
+        switch (dir) {
+            case UP:
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, 5 * 10));
+                break;
+            case DOWN:
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, -5 * 10));
+                break;
+            case LEFT:
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(-5 * 10, 0));
+                break;
+            case RIGHT:
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(5 * 10, 0));
+                break;
+        }
+
+
+
+        return entityBuilder(data)
+                .type(EntityType.BULLET)
+                .bbox(new HitBox(BoundingShape.circle(5)))
+                .view(new Rectangle(8, 8, Color.YELLOW))
+                .with(physics)
+                .with(new CollidableComponent(true))
+                .with(new BulletComponent(owner))
+                .build();
     }
 
     @Spawns("mapManager")
@@ -153,12 +194,20 @@ public class PongFactory implements EntityFactory {
         // Bodies start as static, can become dynamic when no surrounding tiles
         physics.setBodyType(BodyType.STATIC);
 
+        boolean collidable;
+        if (type == TileType.WALL) {
+            collidable = true;
+        } else {
+            collidable = false;
+        }
+
         return entityBuilder(data)
                 .type(EntityType.TILE)
                 .view(new Rectangle(32, 32, Color.BLUE))
                 .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(32, 32)))
                 .with(physics)
                 .with(new TileComponent(type))
+                .with(new CollidableComponent(collidable))
                 .build();
 
     }

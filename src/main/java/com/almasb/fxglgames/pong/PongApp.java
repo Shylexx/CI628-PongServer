@@ -32,10 +32,13 @@ import com.almasb.fxgl.app.GameApplication;
 import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.core.math.FXGLMath;
 import com.almasb.fxgl.core.serialization.Bundle;
+import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.almasb.fxgl.entity.SpawnData;
 import com.almasb.fxgl.input.UserAction;
 import com.almasb.fxgl.net.*;
+import com.almasb.fxgl.physics.CollisionHandler;
+import com.almasb.fxgl.physics.HitBox;
 import com.almasb.fxgl.ui.UI;
 import javafx.geometry.Point2D;
 import javafx.scene.input.KeyCode;
@@ -209,6 +212,34 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
       }, KeyCode.B);
 
 
+      getInput().addAction(new UserAction("FireLeft") {
+          @Override
+          protected void onActionBegin() {
+              player1comp.fireLeft();
+          }
+      }, KeyCode.F);
+
+        getInput().addAction(new UserAction("FireRight") {
+            @Override
+            protected void onActionBegin() {
+                player1comp.fireRight();
+            }
+        }, KeyCode.H);
+
+        getInput().addAction(new UserAction("FireUp") {
+            @Override
+            protected void onActionBegin() {
+                player1comp.fireUp();
+            }
+        }, KeyCode.T);
+
+        getInput().addAction(new UserAction("FireDown") {
+            @Override
+            protected void onActionBegin() {
+                player1comp.fireDown();
+            }
+
+        }, KeyCode.G);
 
 
     }
@@ -251,6 +282,35 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
     protected void initPhysics() {
         getPhysicsWorld().setGravity(0, 0);
 
+
+        // Player collision handler
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.PLAYER) {
+            @Override
+            protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
+                if (a.getComponent(BulletComponent.class).owner != b.getComponent(PlayerComponent.class).playerId) {
+                    b.getComponent(PlayerComponent.class).onHit();
+                    int id = b.getComponent(PlayerComponent.class).playerId;
+                    FXGL.getWorldProperties().increment(String.format("player%dscore", id), +1);
+                    a.removeFromWorld();
+                }
+            }
+        });
+
+        // wall collision handler
+        getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.TILE) {
+            @Override
+            protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
+                if(b.hasComponent(TileComponent.class)) {
+                    System.out.println("B is tile");
+                } else {
+                    System.out.println("B is player");
+                }
+                if(b.getComponent(TileComponent.class).type == TileType.WALL) {
+                    a.removeFromWorld();
+                    b.removeFromWorld();
+                }
+            }
+        });
     }
 
     @Override

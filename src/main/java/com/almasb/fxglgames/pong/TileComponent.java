@@ -57,6 +57,7 @@ public class TileComponent extends Component {
     view.setVisible(true);
     physics.getBody().setActive(true);
     ((Rectangle) view.getChildren().get(0)).setFill(Color.BLUE);
+    getEntity().getComponent(CollidableComponent.class).setValue(true);
   }
 
   public void ChangeWallToRed() {
@@ -70,6 +71,7 @@ public class TileComponent extends Component {
     view.setVisible(false);
     //bbox.clearHitBoxes();
     physics.getBody().setActive(false);
+    getEntity().getComponent(CollidableComponent.class).setValue(false);
   }
 
 }
