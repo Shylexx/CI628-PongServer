@@ -88,7 +88,7 @@ public class PongFactory implements EntityFactory {
                 .build();
     }
 
-    @Spawns("bat")
+/*    @Spawns("bat")
     public Entity newBat(SpawnData data) {
         boolean isPlayer = data.get("isPlayer");
 
@@ -106,7 +106,7 @@ public class PongFactory implements EntityFactory {
                 .with(physics)
                 .with(new BatComponent())
                 .build();
-    }
+    }*/
 
     @Spawns("player")
     public Entity newPlayer(SpawnData data) {
@@ -129,7 +129,7 @@ public class PongFactory implements EntityFactory {
 
       return entityBuilder(data)
               .type(EntityType.PLAYER)
-              .view(new Rectangle(20, 20, playerColor))
+              .view(new Rectangle(16, 16, playerColor))
               .bbox(new HitBox("bodybox", new Point2D(0, 0), BoundingShape.circle(10)))
               .with(physics)
               .with(new CollidableComponent(true))
@@ -155,8 +155,8 @@ public class PongFactory implements EntityFactory {
 
         return entityBuilder(data)
                 .type(EntityType.TILE)
-                .view(new Rectangle(20, 20, Color.BLUE))
-                .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(20, 20)))
+                .view(new Rectangle(32, 32, Color.BLUE))
+                .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(32, 32)))
                 .with(physics)
                 .with(new TileComponent(type))
                 .build();
