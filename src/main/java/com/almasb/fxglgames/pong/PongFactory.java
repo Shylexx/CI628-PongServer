@@ -150,13 +150,12 @@ public class PongFactory implements EntityFactory {
         physics.setFixtureDef(new FixtureDef().density(0.3f).restitution(1.0f));
 
         BulletDir dir = data.get("dir");
-        System.out.println(dir.toString());
         switch (dir) {
             case UP:
-                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, 5 * 10));
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, -5 * 10));
                 break;
             case DOWN:
-                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, -5 * 10));
+                physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(0, 5 * 10));
                 break;
             case LEFT:
                 physics.setOnPhysicsInitialized(() -> physics.setLinearVelocity(-5 * 10, 0));
@@ -203,8 +202,8 @@ public class PongFactory implements EntityFactory {
 
         return entityBuilder(data)
                 .type(EntityType.TILE)
-                .view(new Rectangle(32, 32, Color.BLUE))
-                .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(32, 32)))
+                .view(new Rectangle(16, 16, Color.BLUE))
+                .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(16, 16)))
                 .with(physics)
                 .with(new TileComponent(type))
                 .with(new CollidableComponent(collidable))

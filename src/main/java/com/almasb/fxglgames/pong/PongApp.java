@@ -300,11 +300,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         getPhysicsWorld().addCollisionHandler(new CollisionHandler(EntityType.BULLET, EntityType.TILE) {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
-                if(b.hasComponent(TileComponent.class)) {
-                    System.out.println("B is tile");
-                } else {
-                    System.out.println("B is player");
-                }
                 if(b.getComponent(TileComponent.class).type == TileType.WALL) {
                     a.removeFromWorld();
                     b.removeFromWorld();
@@ -331,9 +326,6 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
 
             server.broadcast(message);
         }
-
-
-
     }
 
     private void initScreenBounds() {
