@@ -188,6 +188,8 @@ public class PongFactory implements EntityFactory {
     @Spawns("tile")
     public Entity newTile(SpawnData data) {
         TileType type = data.get("type");
+        int xcoord = data.get("x");
+        int ycoord = data.get("y");
 
         PhysicsComponent physics = new PhysicsComponent();
         // Bodies start as static, can become dynamic when no surrounding tiles
@@ -205,7 +207,7 @@ public class PongFactory implements EntityFactory {
                 .view(new Rectangle(16, 16, Color.BLUE))
                 .bbox(new HitBox("tilebox", new Point2D(0, 0), BoundingShape.box(16, 16)))
                 .with(physics)
-                .with(new TileComponent(type))
+                .with(new TileComponent(type, xcoord, ycoord))
                 .with(new CollidableComponent(collidable))
                 .build();
 

@@ -10,8 +10,7 @@ import javafx.geometry.Point2D;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import static com.almasb.fxgl.dsl.FXGL.getAppHeight;
-import static com.almasb.fxgl.dsl.FXGL.getAppWidth;
+import static com.almasb.fxgl.dsl.FXGL.*;
 
 public class PlayerComponent extends Component {
 
@@ -32,6 +31,8 @@ public class PlayerComponent extends Component {
 
   protected PhysicsComponent physics;
 
+  private static BulletDir facing = BulletDir.RIGHT;
+
   @Override
   public void onAdded() {
     super.onAdded();
@@ -44,6 +45,8 @@ public class PlayerComponent extends Component {
       physics.overwritePosition(spawnPoints[randomIndex]);
       dead = false;
     }
+    // Kill players if they leave the screen
+    checkOffscreen();
   }
 
   public void onHit() {
@@ -63,7 +66,27 @@ public class PlayerComponent extends Component {
   public void fireDown() {
     FXGL.spawn("bullet", new SpawnData(entity.getX(), entity.getY() + 24).put("ownerID", playerId).put("dir", BulletDir.DOWN));
   }
+
+  public BulletDir fire() {
+    switch(facing) {
+      case RIGHT:
+        fireRight();
+        return facing;
+      case LEFT:
+        fireLeft();
+        return facing;
+      case UP:
+        fireUp();
+        return facing;
+      case DOWN:
+        fireDown();
+        return facing;
+      default:
+        return facing;
+    }
+  }
   public void up() {
+    facing = BulletDir.UP;
     if (entity.getY() >= MOVE_SPEED / 60)
       physics.setVelocityY(-MOVE_SPEED);
     else
@@ -71,6 +94,7 @@ public class PlayerComponent extends Component {
   }
 
   public void down() {
+    facing = BulletDir.DOWN;
     if (entity.getY() >= MOVE_SPEED / 60)
       physics.setVelocityY(MOVE_SPEED);
     else
@@ -78,17 +102,24 @@ public class PlayerComponent extends Component {
   }
 
   public void left() {
+    facing = BulletDir.LEFT;
       physics.setVelocityX(-MOVE_SPEED);
   }
 
   public void right() {
+    facing = BulletDir.RIGHT;
       physics.setVelocityX(MOVE_SPEED);
-
   }
 
   public void stopX() {
     physics.setVelocityX(0);
   }
   public void stopY() { physics.setVelocityY(0);}
+
+  private void checkOffscreen() {
+    if (getEntity().getBoundingBoxComponent().isOutside(getGameScene().getViewport().getVisibleArea())) {
+      dead = true;
+    }
+  }
 
 }

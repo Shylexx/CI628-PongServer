@@ -56,8 +56,21 @@ public class TilemapComponent extends Component {
           {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
   };
 
-
-  public TilemapComponent() {
+  public static String serializeLevel() {
+    // Arg1 is the height
+    // Arg2 is the length
+    // all args after are just values
+    StringBuilder levelString =
+            new StringBuilder("LEVEL_DATA,"
+                    + level.length + ","
+                    + level[0].length);
+    for (int[] row : level) {
+      for (int tile : row) {
+        levelString.append(",").append(tile);
+      }
+    }
+    System.out.println(levelString.toString().getBytes().length);
+    return levelString.toString();
   }
 
   public void spawnMap() {
@@ -66,9 +79,9 @@ public class TilemapComponent extends Component {
     for(int y = 0; y < mapHeight; y++) {
       for (int x = 0; x < mapWidth; x++) {
         if(level[y][x] == 1) {
-          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 16) + MAP_X_OFFSET), ((y * 16) + MAP_Y_OFFSET)).put("type", TileType.WALL));
+          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 16) + MAP_X_OFFSET), ((y * 16) + MAP_Y_OFFSET)).put("type", TileType.WALL).put("x", x).put("y", y));
         } else {
-          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 16) + MAP_X_OFFSET), ((y * 16) + MAP_Y_OFFSET)).put("type", TileType.EMPTY));
+          tiles[y][x] = FXGL.spawn("tile", new SpawnData(((x * 16) + MAP_X_OFFSET), ((y * 16) + MAP_Y_OFFSET)).put("type", TileType.EMPTY).put("x", x).put("y", y));
         }
       }
     }

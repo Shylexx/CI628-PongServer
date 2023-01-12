@@ -22,6 +22,8 @@ public class TileComponent extends Component {
   protected PhysicsComponent physics;
   protected BoundingBoxComponent bbox;
   protected Rectangle rect;
+  public int mapX = 0;
+  public int mapY = 0;
 
   public TileComponent() {
     type = TileType.EMPTY;
@@ -29,6 +31,12 @@ public class TileComponent extends Component {
 
   public TileComponent(TileType initType) {
     type = initType;
+  }
+
+  public TileComponent(TileType initType, int x, int y) {
+    type = initType;
+    mapX = x;
+    mapY = y;
   }
 
   @Override

@@ -264,8 +264,13 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
             var message = "ON_CONNECT," + server.getConnections().size();
 
             connection.send(message);
-        });
 
+            // Wait 500 ms before sending level (to avoid both messages being in the same tcp packet)
+            FXGL.runOnce(() -> {
+                String levelMsg = TilemapComponent.serializeLevel();
+                connection.send(levelMsg);
+            }, Duration.millis(50));
+        });
 
         getGameWorld().addEntityFactory(new PongFactory());
         getGameScene().setBackgroundColor(Color.rgb(0, 0, 5));
@@ -292,6 +297,7 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                     int id = b.getComponent(PlayerComponent.class).playerId;
                     FXGL.getWorldProperties().increment(String.format("player%dscore", id), +1);
                     a.removeFromWorld();
+                    server.broadcast("SCORES," + FXGL.getWorldProperties().getValue("player1score") + ',' + FXGL.getWorldProperties().getValue("player2score"));
                 }
             }
         });
@@ -301,6 +307,8 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
             @Override
             protected void onHitBoxTrigger(Entity a, Entity b, HitBox boxA, HitBox boxB) {
                 if(b.getComponent(TileComponent.class).type == TileType.WALL) {
+                    // Update tile to type at coords x and y
+                    server.broadcast("LEVEL_UPDATE," + "0," + b.getComponent(TileComponent.class).mapX + "," + b.getComponent(TileComponent.class).mapY);
                     a.removeFromWorld();
                     b.removeFromWorld();
                 }
@@ -313,8 +321,8 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
         MainUIController controller = new MainUIController();
         UI ui = getAssetLoader().loadUI("main.fxml", controller);
 
-        controller.getLabelScorePlayer().textProperty().bind(getip("player1score").asString());
-        controller.getLabelScoreEnemy().textProperty().bind(getip("player2score").asString());
+        controller.getLabelScorePlayer().textProperty().bind(getip("player2score").asString());
+        controller.getLabelScoreEnemy().textProperty().bind(getip("player1score").asString());
 
         getGameScene().addUI(ui);
     }
@@ -361,6 +369,17 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                 .buildAndPlay();
     }
 
+    private void player1Fire() {
+        BulletDir direction = player1comp.fire();
+        // args: playerid, direction
+        server.broadcast("SPAWN_BULLET,1," + direction.getValue());
+    }
+
+    private void player2fire() {
+        BulletDir direction = player2comp.fire();
+        server.broadcast("SPAWN_BULLET,2," + direction.getValue());
+    }
+
     @Override
     public void onReceive(Connection<String> connection, String message) {
         var tokens = message.split(",");
@@ -397,6 +416,9 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                     case 'D': {
                       player1comp.right();
                       break;
+                    }
+                    case 'F': {
+                        player1Fire();
                     }
                   }
                 } else if (key.endsWith("_UP")) {
@@ -442,6 +464,9 @@ public class PongApp extends GameApplication implements MessageHandler<String> {
                       player2comp.right();
                       break;
                     }
+                      case 'F': {
+                          player2fire();
+                      }
                   }
                 } else if (key.endsWith("_UP")) {
                   // On button release
